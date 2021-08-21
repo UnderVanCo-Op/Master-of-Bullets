@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/BulletEx.png-9b21385e306e7d1991e438b44dc1ba39.stex"
+path="res://.import/png-clipart-cartoon-artillery-artillery-angle-cartoon.png-dc95144e4f67af14a17c738bd520150c.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/BulletEx.png"
-dest_files=[ "res://.import/BulletEx.png-9b21385e306e7d1991e438b44dc1ba39.stex" ]
+source_file="res://Sprites/png-clipart-cartoon-artillery-artillery-angle-cartoon.png"
+dest_files=[ "res://.import/png-clipart-cartoon-artillery-artillery-angle-cartoon.png-dc95144e4f67af14a17c738bd520150c.stex" ]
 
 [params]
 
