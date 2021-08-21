@@ -1,15 +1,14 @@
-extends Area2D
+extends RigidBody2D
 
-const SPEED = 200 # bullet speed
-var vel = Vector2() # current velocity
+var dragging
+var drag_start = Vector2()
 
-
-func _physics_process(delta):
-	vel.x = SPEED * delta
-	translate(vel)
-
-
-func _on_Bullet_body_entered(body):
-	print("hit: ")
-	print(body)
-	
+func _input(event):
+	if event.is_action_pressed("click") and not dragging:
+		dragging = true
+		drag_start = get_global_mouse_position()
+	if event.is_action_released("click") and dragging:
+		dragging = false
+		var drag_end = get_global_mouse_position()
+		var dir = drag_start - drag_end
+		apply_impulse(Vector2(), dir * 2)
