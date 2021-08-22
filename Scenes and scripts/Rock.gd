@@ -12,6 +12,3 @@ extends RigidBody2D
 #		var drag_end = get_global_mouse_position()
 #		var dir = drag_start - drag_end
 #		apply_impulse(Vector2(), dir * 2)
-
-func launch() -> void:
-	apply_impulse(Vector2(), Vector2(-1000,-340))

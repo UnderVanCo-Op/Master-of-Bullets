@@ -9,7 +9,7 @@ bounce = 0.5
 [sub_resource type="CircleShape2D" id=2]
 radius = 25.7772
 
-[node name="RigidBody2D" type="RigidBody2D"]
+[node name="Rock" type="RigidBody2D"]
 position = Vector2( 595.418, 360.217 )
 collision_layer = 2
 collision_mask = 3
