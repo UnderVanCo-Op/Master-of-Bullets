@@ -20,5 +20,5 @@ texture = ExtResource( 3 )
 flip_h = true
 flip_v = true
 
-[node name="SpawnLoc" type="Node2D" parent="Dulo"]
+[node name="SpawnLoc" type="Position2D" parent="Dulo"]
 position = Vector2( 121.267, 0 )
