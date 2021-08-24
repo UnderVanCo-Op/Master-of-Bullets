@@ -1,7 +1,6 @@
 extends Node2D
 
 var rock = preload("res://Scenes and scripts/Rock.tscn").instance()
-var spawn_offset := Vector2(100,100)
 var rock_speed = 1000
 
 var trajectory : PoolVector2Array
@@ -35,17 +34,36 @@ func _ready():
 
 func _draw():
 	#draw_line(Vector2(0,0), get_global_mouse_position() - global_position, Color.red, 5)
+	
 	draw_polyline(trajectory, Color.red, 5)
+	
+
+func path_calc():
+	var remainL = 5000 #2500 # больше явно не понадобится, по факту это коэф-т
+	var start = $Dulo/SpawnLoc.get_global_position() - global_position
+	var end : Vector2	# вычислим точку до которой будет лететь луч
+	end = start + $Dulo.rotation * remainL
+	print("end vector = ")
+	print(end)
+	get_world_2d().direct_space_state.intersect_ray(start, end)
+	
+	
+	
+	
+	
+	
 	
 
 func updatePoints():	# обновляет точки траектории в соотв-ии с текущим направлением мыши
 	for i in trajectory.size() - 1:		# удаление старых точек
-		trajectory.remove(i)
-	print("traj2")
-	print(trajectory)
-	trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)
-	trajectory.append(Vector2(-200,-400))
-	
+		trajectory.remove(i)			# удаление старых точек
+	trajectory.remove(0)				# удаление старых точек
+	#print("traj2")
+	#print(trajectory)
+	print(trajectory.empty())
+	trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)	# точка спауна
+	#trajectory.append(Vector2(-200,-400)) 
+	trajectory.append(Vector2(500,0).rotated($Dulo.rotation))
 
 # warning-ignore:unused_argument
 func _process(delta:float)->void:	
