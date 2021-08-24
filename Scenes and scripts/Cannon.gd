@@ -18,6 +18,7 @@ func _input(event):
 		rock.apply_impulse(Vector2(), Vector2(rock_speed,0).rotated($Dulo.rotation))
 		get_viewport().get_node("Testworld").add_child(rock)
 		#rock.launch(-impulse)
+		updatePoints()
 		print("shoootiiinggg!!!")
 		#SMain.emit_signal("shoot",  global_position)
 
@@ -28,6 +29,8 @@ func _ready():
 	#trajectory.append(Vector2(300,300))
 	trajectory.append(Vector2(-200,-400))
 	trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)
+	print("traj1")
+	print(trajectory)
 	_draw()
 
 func _draw():
@@ -36,13 +39,17 @@ func _draw():
 	
 
 func updatePoints():	# обновляет точки траектории в соотв-ии с текущим направлением мыши
-	for i in trajectory.size():		# удаление старых точек
+	for i in trajectory.size() - 1:		# удаление старых точек
 		trajectory.remove(i)
+	print("traj2")
+	print(trajectory)
+	trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)
+	trajectory.append(Vector2(-200,-400))
 	
 
 # warning-ignore:unused_argument
 func _process(delta:float)->void:	
-	updatePoints()	# для обновления точек траектории
+	#updatePoints()	# для обновления точек траектории
 	update()		# для обновления встроенной функции _draw
 	
 	
