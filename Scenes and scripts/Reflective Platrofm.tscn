@@ -3,15 +3,18 @@
 [ext_resource path="res://Sprites/block.svg" type="Texture" id=1]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 192, 48 )
+extents = Vector2( 114.22, 29.3765 )
 
 [node name="Reflective Platrofm" type="StaticBody2D"]
 collision_mask = 3
 
-[node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 8, 232 )
-scale = Vector2( 0.5, 0.5 )
+[node name="Sprite" type="Polygon2D" parent="."]
+scale = Vector2( 0.3, 0.3 )
+offset = Vector2( 16.5, 464.5 )
 texture = ExtResource( 1 )
+polygon = PoolVector2Array( 363.5, -370, 362.5, -370, 362.5, -369, 361.5, -369, 361.5, -368, -396.5, -368, -396.5, -561, 363.5, -561 )
+uv = PoolVector2Array( 760, 191, 759, 191, 759, 192, 758, 192, 758, 193, 0, 193, 0, 0, 760, 0 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7 ) ]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
