@@ -30,4 +30,4 @@ position = Vector2( 821.476, 713.151 )
 position = Vector2( 1580.47, 552.888 )
 
 [node name="Cannon" parent="." instance=ExtResource( 1 )]
-position = Vector2( 1566, 505.315 )
+position = Vector2( 1559.27, 509.244 )
