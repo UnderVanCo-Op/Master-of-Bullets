@@ -24,47 +24,73 @@ func _input(event):
 func _physics_process(delta):
 	$Dulo.look_at(get_global_mouse_position())
 	updatePoints()
+	update()		# для обновления встроенной функции _draw
 
 func _ready():
+	pass
 	#trajectory.append(Vector2(300,300))
-	trajectory.append(Vector2(-200,-400))
-	trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)
+	#trajectory.append(Vector2(-200,-400))
+	#trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)
 	#print("traj1")
 	#print(trajectory)
-	_draw()
+	#_draw()
 
 func _draw():
 	#draw_line(Vector2(0,0), get_global_mouse_position() - global_position, Color.red, 5)
+	draw_polyline(trajectory, Color.red, 5)		# рисует нашу траекторию
 	
-	draw_polyline(trajectory, Color.red, 5)
-	
+func traj_minus(v:Vector2):		# добавить в траекторию с вычетом global pos (тк траектория относительная)
+	trajectory.append(v - global_position)
 
 func path_calc():
-	var remainL = 50 #2500 # больше явно не понадобится, по факту это коэф-т
-	var start = $Dulo/SpawnLoc.get_global_position() - global_position	# позиция дула отн-ая
-	var end : Vector2	# вычислим точку до которой будет лететь луч
-	end = start + Vector2(remainL, 0).rotated($Dulo.rotation)	# позиция конца отн-ая
+	var bounces = 5
+	var remainL = 1000 	#2500 # больше явно не понадобится, по факту это коэф-т
+	var start = $Dulo/SpawnLoc.get_global_position()	# позиция дула абс-ая
+	var end : Vector2		# вычислим точку до которой будет лететь луч
+	var dir : Vector2		# это нормализированный вектор направления
+	end = start + Vector2(remainL, 0).rotated($Dulo.rotation)	# позиция конца абс-ая
+	dir = end.normalized()
+	#print("dir")
+	#print(dir)
 	#print("end vector = ")
 	#print(end)
-	trajectory.append(Vector2(0,0)) 
+	traj_minus(start)	# добавить в траекторию с вычетом глобальной позиции
 	#print("start vector = ")
 	#print(start)
-	trajectory.append(end) 
+	#trajectory.append(end) 
 	var data : Dictionary
-	data = get_world_2d().direct_space_state.intersect_ray($Dulo/SpawnLoc.get_global_position(), global_position + end)
-	if data:	
-		#data.position - точка пересечения с коллайдером
-		#end = data.position - (data.position - pos).normalized() * 0.01	# смещение точки для выхода из коллайдера
-		#dir = dir.bounce(data.normal).normalized()
-		#bounces -= 1
-		#data collider
-		print("DATA!:")
-		print(data)
-	else:
-		print("NO DATA")
-		print(data)
-	
-	
+	while remainL > 0.001 && bounces >= 0:
+		data = get_world_2d().direct_space_state.intersect_ray(start, end)
+		if data:	# если есть столкновение
+			#data.position - точка пересечения с коллайдером
+			end = data.position - (data.position - start).normalized() * 0.01	# смещение точки для выхода из коллайдера
+			#end = data.position
+			dir = (end - global_position).normalized()
+			dir = dir.bounce(data.normal).normalized()
+			#data.collider
+			#data collider
+			print("DATA!:")
+			print(data)
+			#trajectory.append(data.position - global_position)	# добавить к трейслайну
+			pass
+		else:
+			print("NO DATA")
+			print(data)
+		remainL -= (end - start).length()
+		#print("rL")
+		#print(remainL)
+		traj_minus(end)
+		#trajectory.append(end)
+		#print((end - start).length())
+		#print((start).length())
+		
+		#print("traj6")
+		#print(trajectory)	
+		start = end	# переходим на новую точку
+		end = start + remainL * dir
+		bounces -= 1
+		
+
 
 func updatePoints():	# обновляет точки траектории в соотв-ии с текущим направлением мыши
 	for i in trajectory.size() - 1:		# удаление старых точек
@@ -79,9 +105,10 @@ func updatePoints():	# обновляет точки траектории в с�
 	#trajectory.append(Vector2(500,0).rotated($Dulo.rotation))
 
 # warning-ignore:unused_argument
-func _process(delta:float)->void:	
+func _process(delta):	
+	pass
 	#updatePoints()	# для обновления точек траектории
-	update()		# для обновления встроенной функции _draw
+	#update()		# для обновления встроенной функции _draw
 	
 	
 #func _physics_process(delta):

@@ -30,8 +30,6 @@ SMain="*res://Singletons/SMain.gd"
 
 [debug]
 
-settings/stdout/print_fps=true
-settings/stdout/verbose_stdout=true
 gdscript/completion/autocomplete_setters_and_getters=true
 
 [display]
