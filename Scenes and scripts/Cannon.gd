@@ -17,19 +17,20 @@ func _input(event):
 		rock.apply_impulse(Vector2(), Vector2(rock_speed,0).rotated($Dulo.rotation))
 		get_viewport().get_node("Testworld").add_child(rock)
 		#rock.launch(-impulse)
-		updatePoints()
-		print("shoootiiinggg!!!")
+		#updatePoints()
+		#print("shoootiiinggg!!!")
 		#SMain.emit_signal("shoot",  global_position)
 
 func _physics_process(delta):
 	$Dulo.look_at(get_global_mouse_position())
+	updatePoints()
 
 func _ready():
 	#trajectory.append(Vector2(300,300))
 	trajectory.append(Vector2(-200,-400))
 	trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)
-	print("traj1")
-	print(trajectory)
+	#print("traj1")
+	#print(trajectory)
 	_draw()
 
 func _draw():
@@ -39,18 +40,29 @@ func _draw():
 	
 
 func path_calc():
-	var remainL = 5000 #2500 # больше явно не понадобится, по факту это коэф-т
-	var start = $Dulo/SpawnLoc.get_global_position() - global_position
+	var remainL = 50 #2500 # больше явно не понадобится, по факту это коэф-т
+	var start = $Dulo/SpawnLoc.get_global_position() - global_position	# позиция дула отн-ая
 	var end : Vector2	# вычислим точку до которой будет лететь луч
-	end = start + $Dulo.rotation * remainL
-	print("end vector = ")
-	print(end)
-	get_world_2d().direct_space_state.intersect_ray(start, end)
-	
-	
-	
-	
-	
+	end = start + Vector2(remainL, 0).rotated($Dulo.rotation)	# позиция конца отн-ая
+	#print("end vector = ")
+	#print(end)
+	trajectory.append(Vector2(0,0)) 
+	#print("start vector = ")
+	#print(start)
+	trajectory.append(end) 
+	var data : Dictionary
+	data = get_world_2d().direct_space_state.intersect_ray($Dulo/SpawnLoc.get_global_position(), global_position + end)
+	if data:	
+		#data.position - точка пересечения с коллайдером
+		#end = data.position - (data.position - pos).normalized() * 0.01	# смещение точки для выхода из коллайдера
+		#dir = dir.bounce(data.normal).normalized()
+		#bounces -= 1
+		#data collider
+		print("DATA!:")
+		print(data)
+	else:
+		print("NO DATA")
+		print(data)
 	
 	
 
@@ -60,10 +72,11 @@ func updatePoints():	# обновляет точки траектории в с�
 	trajectory.remove(0)				# удаление старых точек
 	#print("traj2")
 	#print(trajectory)
-	print(trajectory.empty())
-	trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)	# точка спауна
+	#print(trajectory.empty())
+	path_calc()		# вызов нового просчета пути
+	#trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)	# точка спауна
 	#trajectory.append(Vector2(-200,-400)) 
-	trajectory.append(Vector2(500,0).rotated($Dulo.rotation))
+	#trajectory.append(Vector2(500,0).rotated($Dulo.rotation))
 
 # warning-ignore:unused_argument
 func _process(delta:float)->void:	
