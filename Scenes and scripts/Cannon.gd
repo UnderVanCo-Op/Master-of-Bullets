@@ -102,23 +102,22 @@ func updatePoints(delta):	# обновляет точки траектории �
 			#data.position - точка пересечения с коллайдером
 			end = data.position - (data.position - start).normalized() * 0.01	# смещение точки для выхода из коллайдера
 			#end = data.position
-			dir = (end - global_position).normalized()
 			dir = dir.bounce(data.normal).normalized()
 			#data.collider
 			#data collider
 			
-			var t_inst = test.instance()
-			t_inst.position = end
-			t_inst.scale = Vector2(0.1,0.1)
-			get_viewport().get_node("Testworld").add_child(t_inst)
+#			var t_inst = test.instance()
+#			t_inst.position = end
+#			t_inst.scale = Vector2(0.1,0.1)
+#			get_viewport().get_node("Testworld").add_child(t_inst)
 			
-			print("DATA!:")
-			print(data)
+			#print("DATA!:")
+			#print(data)
 			#trajectory.append(data.position - global_position)	# добавить к трейслайну
-			pass
+			
 		else:
 			print("NO DATA")
-			print(data)
+			#print(data)
 		remainL -= (end - start).length()
 		#print("rL")
 		#print(remainL)
