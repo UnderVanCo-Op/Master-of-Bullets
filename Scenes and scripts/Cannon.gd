@@ -1,9 +1,13 @@
 extends Node2D
 
 var rock = preload("res://Scenes and scripts/Rock.tscn").instance()
+var test = preload("res://Scenes and scripts/OldRock.tscn")
 var rock_speed = 1000
+var traj_speed : float = 1200.0 * 60 
 
 var trajectory : PoolVector2Array
+var colors : PoolColorArray
+var switcher : int = 0
 
 func _input(event):
 	if event.is_action_pressed("Shoot"):		# spawn rock
@@ -23,8 +27,8 @@ func _input(event):
 
 func _physics_process(delta):
 	$Dulo.look_at(get_global_mouse_position())
-	updatePoints()
-	update()		# для обновления встроенной функции _draw
+	updatePoints(delta)
+	#update()		# для обновления встроенной функции _draw
 
 func _ready():
 	pass
@@ -34,21 +38,53 @@ func _ready():
 	#print("traj1")
 	#print(trajectory)
 	#_draw()
+	set_process(true)
+	colors.append(Color.red)
+	colors.append(Color.green)
+	colors.append(Color.blue)
+	colors.append(Color.blueviolet)
+	colors.append(Color.yellow)
+	colors.append(Color.orange)
+
+#func _draw():
+#	#draw_line(Vector2(0,0), get_global_mouse_position() - global_position, Color.red, 5)
+#	#draw_polyline_colors(trajectory, colors, 5)		# рисует нашу траекторию
+	
 
 func _draw():
-	#draw_line(Vector2(0,0), get_global_mouse_position() - global_position, Color.red, 5)
-	draw_polyline(trajectory, Color.red, 5)		# рисует нашу траекторию
-	
+	#print("draw")
+	switcher = 0
+	if !trajectory.empty():
+		var c : Color = Color.white
+		for i in trajectory.size() - 1:	# потому что нужно 2 точки для линии
+#			if i == 4:
+#				break
+#			if i < 2:
+#				c = Color.blue
+#			else:
+#				c = Color.red
+			var p1 = trajectory[i]
+			var p2 = trajectory[i + 1]
+			draw_line(p1, p2, c, 5)
+			c = colors[switcher]
+
 func traj_minus(v:Vector2):		# добавить в траекторию с вычетом global pos (тк траектория относительная)
 	trajectory.append(v - global_position)
 
-func path_calc():
-	var bounces = 5
-	var remainL = 1000 	#2500 # больше явно не понадобится, по факту это коэф-т
+
+func updatePoints(delta):	# обновляет точки траектории в соотв-ии с текущим направлением мыши
+	for i in trajectory.size() -1:		# удаление старых точек
+		trajectory.remove(i)			# удаление старых точек
+	#trajectory.remove(0)				# удаление старых точек
+	
+	
+	var bounces = 3
+	var remainL = traj_speed * delta # длина траектории
 	var start = $Dulo/SpawnLoc.get_global_position()	# позиция дула абс-ая
-	var end : Vector2		# вычислим точку до которой будет лететь луч
+	var end : Vector2		# вычислим точку до которой будет лететь луч (абс)
 	var dir : Vector2		# это нормализированный вектор направления
 	end = start + Vector2(remainL, 0).rotated($Dulo.rotation)	# позиция конца абс-ая
+	
 	dir = end.normalized()
 	#print("dir")
 	#print(dir)
@@ -59,8 +95,9 @@ func path_calc():
 	#print(start)
 	#trajectory.append(end) 
 	var data : Dictionary
+	var spacestate:= get_world_2d().direct_space_state
 	while remainL > 0.001 && bounces >= 0:
-		data = get_world_2d().direct_space_state.intersect_ray(start, end)
+		data = spacestate.intersect_ray(start, end)
 		if data:	# если есть столкновение
 			#data.position - точка пересечения с коллайдером
 			end = data.position - (data.position - start).normalized() * 0.01	# смещение точки для выхода из коллайдера
@@ -69,6 +106,12 @@ func path_calc():
 			dir = dir.bounce(data.normal).normalized()
 			#data.collider
 			#data collider
+			
+			var t_inst = test.instance()
+			t_inst.position = end
+			t_inst.scale = Vector2(0.1,0.1)
+			get_viewport().get_node("Testworld").add_child(t_inst)
+			
 			print("DATA!:")
 			print(data)
 			#trajectory.append(data.position - global_position)	# добавить к трейслайну
@@ -89,26 +132,12 @@ func path_calc():
 		start = end	# переходим на новую точку
 		end = start + remainL * dir
 		bounces -= 1
-		
-
-
-func updatePoints():	# обновляет точки траектории в соотв-ии с текущим направлением мыши
-	for i in trajectory.size() - 1:		# удаление старых точек
-		trajectory.remove(i)			# удаление старых точек
-	trajectory.remove(0)				# удаление старых точек
-	#print("traj2")
 	#print(trajectory)
-	#print(trajectory.empty())
-	path_calc()		# вызов нового просчета пути
-	#trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)	# точка спауна
-	#trajectory.append(Vector2(-200,-400)) 
-	#trajectory.append(Vector2(500,0).rotated($Dulo.rotation))
+	trajectory.invert()
 
 # warning-ignore:unused_argument
 func _process(delta):	
-	pass
-	#updatePoints()	# для обновления точек траектории
-	#update()		# для обновления встроенной функции _draw
+	update()		# для обновления встроенной функции _draw
 	
 	
 #func _physics_process(delta):
