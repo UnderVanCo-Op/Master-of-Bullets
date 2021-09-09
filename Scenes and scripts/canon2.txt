@@ -1,8 +1,8 @@
 extends Node2D
 
 var rock = preload("res://Scenes and scripts/Rock.tscn").instance()
-var rock_speed = 1000	# СЃРєРѕСЂРѕСЃС‚СЊ РєР°РјРЅСЏ
-var isHome := true		# СЃРІРёС‚С‡РµСЂ РґР»СЏ РєР°РјРЅСЏ
+var rock_speed = 1000	# скорость камня
+var isHome := true		# свитчер для камня
 
 var trajectory : PoolVector2Array
 var circle := Vector2.ZERO
@@ -18,20 +18,21 @@ func _input(event):
 			get_viewport().get_node("Testworld").add_child(rock)
 			isHome = false
 		
+		calc_traj()
+
 
 func _physics_process(delta):
 	$Dulo.look_at(get_global_mouse_position())
-	#update()					# РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ РІСЃС‚СЂРѕРµРЅРЅРѕР№ С„СѓРЅРєС†РёРё _draw
+	#update()					# для обновления встроенной функции _draw
 
-func traj_to_relative():		# РїРµСЂРµРІРѕРґ РІСЃРµС… РєРѕРѕСЂРґ, РєСЂРѕРјРµ 0-РѕР№ РІ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Рµ
+
+func traj_to_relative():		# перевод всех коорд, кроме 0-ой в относительные
 	for i in trajectory.size():
 		trajectory[i] = trajectory[i] - global_position
-	#trajectory[0] = trajectory[0] - global_position	# РЅРµ РЅСѓР¶РЅР°
+	#trajectory[0] = trajectory[0] - global_position	# не нужна
 
-func _process(delta):
-	calc_traj()
 
-func calc_traj():	# СЂР°Р±РѕС‚Р°РµРј СЃ Р°Р±СЃ-РјРё РєРѕРѕСЂРґ-Р°РјРё, РІ РєРѕРЅС†Рµ СЃ РїРѕРјРѕС‰СЊСЋ С„ РїРµСЂРµРІРѕРґРёРј РІ РѕС‚РЅ-С‹Рµ РґР»СЏ С„ _draw
+func calc_traj():	# работаем с абс-ми коорд-ами, в конце с помощью ф переводим в отн-ые для ф _draw
 	#print(trajectory.size())
 	
 	print("\n\n\niteration\n")
@@ -41,14 +42,15 @@ func calc_traj():	# СЂР°Р±РѕС‚Р°РµРј СЃ Р°Р±СЃ-РјРё РєРѕРѕСЂРґ-Р°РјРё, РІ РєРѕРЅ
 	print("TEST1: trajectory must be empty")
 	print(trajectory.size())
 	
-	var lineLen = 1500 # px or unit of measurment 
-	var start = $Dulo/SpawnLoc.get_global_position()	# РїРѕР·РёС†РёСЏ РґСѓР»Р° Р°Р±СЃ-Р°СЏ
-	var end : Vector2			# РІС‹С‡РёСЃР»РёРј С‚РѕС‡РєСѓ РґРѕ РєРѕС‚РѕСЂРѕР№ Р±СѓРґРµС‚ Р»РµС‚РµС‚СЊ Р»СѓС‡ (Р°Р±СЃ)
-	var dir : Vector2			# СЌС‚Рѕ РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ (РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РЅРѕСЂРјР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рј) 
-	#end = start + Vector2(100, 0).rotated($Dulo.rotation)	# РїРѕР·РёС†РёСЏ РєРѕРЅС†Р° Р°Р±СЃ-Р°СЏ
-	end = get_global_mouse_position()				# РїРѕР·РёС†РёСЏ Р°Р±СЃ
+	var bounces = 1
+	var lineLen = 900 # px or unit of measurment 
+	var start = $Dulo/SpawnLoc.get_global_position()	# позиция дула абс-ая
+	var end : Vector2			# вычислим точку до которой будет лететь луч (абс)
+	var dir : Vector2			# это вектор направления (должен быть нормализированным) 
+	#end = start + Vector2(100, 0).rotated($Dulo.rotation)	# позиция конца абс-ая
+	end = get_global_mouse_position()				# позиция абс
 	dir = end - start
-	dir = dir.normalized()		# РЅРѕСЂРјР°Р»РёР·СѓРµРј РІРµРєС‚РѕСЂ
+	dir = dir.normalized()		# нормализуем вектор
 	#print("dir normalized ".insert(20, var2str(dir)))
 	trajectory.append(start)
 	end = lineLen * dir + global_position
@@ -58,21 +60,21 @@ func calc_traj():	# СЂР°Р±РѕС‚Р°РµРј СЃ Р°Р±СЃ-РјРё РєРѕРѕСЂРґ-Р°РјРё, РІ РєРѕРЅ
 	data = spacestate.intersect_ray(start, end)
 	if data:
 		#print("data".insert(20,var2str(data)))
-		circle = data.position - global_position	# СЃРјРµС‰Р°РµРј circle
+		circle = data.position - global_position	# смещаем circle
 		#print("\ndata, pos:")
 		#print(data.position)
 		#end = data.position
 		end = data.position - (data.position - start).normalized() * 0.01
 		#print("TEST2: change dir, dir before:".insert(40, var2str(dir)))
-		dir = dir.bounce(data.normal).normalized()	# РЅРѕСЂРјР°Р»Р°Р№Р·Рґ РЅР° РІСЃСЏРєРёР№, РІРµРєС‚РѕСЂ РїСЂР°РІРёР»СЊРЅС‹Р№
+		dir = dir.bounce(data.normal).normalized()	# нормалайзд на всякий, вектор правильный
 		#print("dir after:".insert(20, var2str(dir)))
 		
 	else:
 		#print("no data")
 		lineLen -= (end - start).length()
 		trajectory.append(end)
-		traj_to_relative()			# РїРµСЂРµС…РѕРґ РІ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Рµ РєРѕРѕСЂРґ-С‹
-		update()					# РѕР±РЅРѕРІР»РµРЅРёРµ С„СѓРЅРєС†РёРё draw
+		traj_to_relative()			# переход в относительные коорд-ы
+		update()					# обновление функции draw
 		return
 	
 	#while bounces > 0 && lineLen > 0.001:
@@ -89,19 +91,20 @@ func calc_traj():	# СЂР°Р±РѕС‚Р°РµРј СЃ Р°Р±СЃ-РјРё РєРѕРѕСЂРґ-Р°РјРё, РІ РєРѕРЅ
 	start = end
 	end = lineLen * dir + start
 	#
+	data.clear()	# очистка словаря
 	data = spacestate.intersect_ray(start, end)
 	if data:
-		circle2 = data.position - global_position	# СЃРјРµС‰Р°РµРј circle
+		circle2 = data.position - global_position	# смещаем circle
 		#print("some data achieved2")
 		end = data.position
 		#print("2TEST2: change dir, dir before:".insert(40, var2str(dir)))
-		dir = dir.bounce(data.normal).normalized()	# РЅРѕСЂРјР°Р»Р°Р№Р·Рґ РЅР° РІСЃСЏРєРёР№, РІРµРєС‚РѕСЂ РїСЂР°РІРёР»СЊРЅС‹Р№
+		dir = dir.bounce(data.normal).normalized()	# нормалайзд на всякий, вектор правильный
 		#print("2dir after:".insert(20, var2str(dir)))
 		
 	else:
 		trajectory.append(end)
-		traj_to_relative()			# РїРµСЂРµС…РѕРґ РІ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Рµ РєРѕРѕСЂРґ-С‹
-		update()					# РѕР±РЅРѕРІР»РµРЅРёРµ С„СѓРЅРєС†РёРё draw
+		traj_to_relative()			# переход в относительные коорд-ы
+		update()					# обновление функции draw
 		return
 	
 	
@@ -119,17 +122,17 @@ func calc_traj():	# СЂР°Р±РѕС‚Р°РµРј СЃ Р°Р±СЃ-РјРё РєРѕРѕСЂРґ-Р°РјРё, РІ РєРѕРЅ
 	#
 	data = spacestate.intersect_ray(start, end)
 	if data:
-		#circle3 = data.position - global_position	# СЃРјРµС‰Р°РµРј circle
+		#circle3 = data.position - global_position	# смещаем circle
 		#print("some data achieved2")
 		end = data.position
 		#print("2TEST2: change dir, dir before:".insert(40, var2str(dir)))
-		dir = dir.bounce(data.normal).normalized()	# РЅРѕСЂРјР°Р»Р°Р№Р·Рґ РЅР° РІСЃСЏРєРёР№, РІРµРєС‚РѕСЂ РїСЂР°РІРёР»СЊРЅС‹Р№
+		dir = dir.bounce(data.normal).normalized()	# нормалайзд на всякий, вектор правильный
 		#print("2dir after:".insert(20, var2str(dir)))
 		
 	else:
 		trajectory.append(end)
-		traj_to_relative()			# РїРµСЂРµС…РѕРґ РІ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Рµ РєРѕРѕСЂРґ-С‹
-		update()					# РѕР±РЅРѕРІР»РµРЅРёРµ С„СѓРЅРєС†РёРё draw
+		traj_to_relative()			# переход в относительные коорд-ы
+		update()					# обновление функции draw
 		return
 	
 	
@@ -139,19 +142,16 @@ func calc_traj():	# СЂР°Р±РѕС‚Р°РµРј СЃ Р°Р±СЃ-РјРё РєРѕРѕСЂРґ-Р°РјРё, РІ РєРѕРЅ
 	#print("l after: ".insert(50, var2str(lineLen)))
 	
 	
-	
-	traj_to_relative()			# РїРµСЂРµС…РѕРґ РІ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Рµ РєРѕРѕСЂРґ-С‹
-	update()					# РѕР±РЅРѕРІР»РµРЅРёРµ С„СѓРЅРєС†РёРё draw
-	
-	
-	
-	
+	print("TEST_END: trajectory must be 0-4 incl")
+	print(trajectory.size())
+	traj_to_relative()			# переход в относительные коорд-ы
+	update()					# обновление функции draw
 
 
 
-func _draw():	# С„СѓРЅРєС†РёСЏ СЂР°Р±РѕС‚Р°РµС‚ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ
+func _draw():	# функция работает относительно
 	#draw_line(Vector2(0,0), get_global_mouse_position() - global_position, Color.red, 5)
-	#draw_polyline_colors(trajectory, colors, 5)	# СЂРёСЃСѓРµС‚ РЅР°С€Сѓ С‚СЂР°РµРєС‚РѕСЂРёСЋ
+	#draw_polyline_colors(trajectory, colors, 5)	# рисует нашу траекторию
 	draw_polyline(trajectory, Color.red, 5)			# starting point count = 0 so it causes error on play
 	draw_circle(circle, 10, Color.greenyellow)
 	draw_circle(circle2, 10, Color.blue)
