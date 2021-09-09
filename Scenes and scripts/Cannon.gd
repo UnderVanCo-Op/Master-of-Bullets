@@ -6,8 +6,8 @@ var rock_speed = 1000
 var traj_speed : float = 1200.0 * 60 
 
 var trajectory : PoolVector2Array
+var testtraj : PoolVector2Array
 var colors : PoolColorArray
-var switcher : int = 0
 
 func _input(event):
 	if event.is_action_pressed("Shoot"):		# spawn rock
@@ -31,13 +31,11 @@ func _physics_process(delta):
 	#update()		# для обновления встроенной функции _draw
 
 func _ready():
-	pass
-	#trajectory.append(Vector2(300,300))
-	#trajectory.append(Vector2(-200,-400))
-	#trajectory.append($Dulo/SpawnLoc.get_global_position() - global_position)
-	#print("traj1")
-	#print(trajectory)
-	#_draw()
+	testtraj.append(Vector2(0,0))
+	testtraj.append(Vector2(100,100))
+	testtraj.append(Vector2(300,10))
+	testtraj.append(Vector2(550,210))
+	testtraj.append(Vector2(63,530))
 	set_process(true)
 	colors.append(Color.red)
 	colors.append(Color.green)
@@ -46,27 +44,28 @@ func _ready():
 	colors.append(Color.yellow)
 	colors.append(Color.orange)
 
-#func _draw():
-#	#draw_line(Vector2(0,0), get_global_mouse_position() - global_position, Color.red, 5)
-#	#draw_polyline_colors(trajectory, colors, 5)		# рисует нашу траекторию
-	
-
 func _draw():
-	#print("draw")
-	switcher = 0
-	if !trajectory.empty():
-		var c : Color = Color.white
-		for i in trajectory.size() - 1:	# потому что нужно 2 точки для линии
-#			if i == 4:
-#				break
-#			if i < 2:
-#				c = Color.blue
-#			else:
-#				c = Color.red
-			var p1 = trajectory[i]
-			var p2 = trajectory[i + 1]
-			draw_line(p1, p2, c, 5)
-			c = colors[switcher]
+	#draw_line(Vector2(0,0), get_global_mouse_position() - global_position, Color.red, 5)
+	draw_polyline_colors(trajectory, colors, 5)		# рисует нашу траекторию
+	print(trajectory)
+
+
+#func _draw():
+#	#print("draw")
+#	switcher = 0
+#	if !trajectory.empty():
+#		var c : Color = Color.white
+#		for i in trajectory.size() - 1:	# потому что нужно 2 точки для линии
+##			if i == 4:
+##				break
+##			if i < 2:
+##				c = Color.blue
+##			else:
+##				c = Color.red
+#			var p1 = trajectory[i]
+#			var p2 = trajectory[i + 1]
+#			draw_line(p1, p2, c, 5)
+#			c = colors[switcher]
 
 func traj_minus(v:Vector2):		# добавить в траекторию с вычетом global pos (тк траектория относительная)
 	trajectory.append(v - global_position)
@@ -76,15 +75,15 @@ func updatePoints(delta):	# обновляет точки траектории �
 	for i in trajectory.size() -1:		# удаление старых точек
 		trajectory.remove(i)			# удаление старых точек
 	#trajectory.remove(0)				# удаление старых точек
-	
-	
+
+
 	var bounces = 3
 	var remainL = traj_speed * delta # длина траектории
 	var start = $Dulo/SpawnLoc.get_global_position()	# позиция дула абс-ая
 	var end : Vector2		# вычислим точку до которой будет лететь луч (абс)
 	var dir : Vector2		# это нормализированный вектор направления
 	end = start + Vector2(remainL, 0).rotated($Dulo.rotation)	# позиция конца абс-ая
-	
+
 	dir = end.normalized()
 	#print("dir")
 	#print(dir)
@@ -105,16 +104,16 @@ func updatePoints(delta):	# обновляет точки траектории �
 			dir = dir.bounce(data.normal).normalized()
 			#data.collider
 			#data collider
-			
+
 #			var t_inst = test.instance()
 #			t_inst.position = end
 #			t_inst.scale = Vector2(0.1,0.1)
 #			get_viewport().get_node("Testworld").add_child(t_inst)
-			
+
 			#print("DATA!:")
 			#print(data)
 			#trajectory.append(data.position - global_position)	# добавить к трейслайну
-			
+
 		else:
 			print("NO DATA")
 			#print(data)
@@ -125,7 +124,7 @@ func updatePoints(delta):	# обновляет точки траектории �
 		#trajectory.append(end)
 		#print((end - start).length())
 		#print((start).length())
-		
+
 		#print("traj6")
 		#print(trajectory)	
 		start = end	# переходим на новую точку
@@ -137,8 +136,8 @@ func updatePoints(delta):	# обновляет точки траектории �
 # warning-ignore:unused_argument
 func _process(delta):	
 	update()		# для обновления встроенной функции _draw
-	
-	
+
+
 #func _physics_process(delta):
 #	if bounces > 0:
 #		rock_pro(delta)
