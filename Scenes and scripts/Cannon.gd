@@ -5,9 +5,6 @@ var rock_speed = 1000	# скорость камня
 var isHome := true		# свитчер для камня
 
 var trajectory : PoolVector2Array
-var circle := Vector2.ZERO
-var circle2 := Vector2.ZERO
-var circle3 := Vector2.ZERO
 
 func _input(event):
 	if event.is_action_pressed("Shoot"):		# spawn rock
@@ -47,7 +44,7 @@ func calc_traj():	# работаем с абс-ми коорд-ами, в кон
 	data = spacestate.intersect_ray(start, end)
 	
 	if data:
-		circle = data.position - global_position	# смещаем circle
+		#circle = data.position - global_position	# смещаем circle
 		end = data.position - (data.position - start).normalized() * 0.01
 		dir = dir.bounce(data.normal.normalized()).normalized()	# нормалайзд для избавления от ошибки
 		
@@ -82,5 +79,10 @@ func calc_traj():	# работаем с абс-ми коорд-ами, в кон
 	traj_to_relative()			# переход в относительные коорд-ы
 	update()					# обновление функции draw
 
-func _draw():	# функция работает относительно
-	draw_polyline(trajectory, Color.red, 5)			# starting point count = 0 so it causes error on play
+#func _draw():	# функция работает относительно
+#	draw_polyline(trajectory, Color.gainsboro, 50)			# starting point count = 0 so it causes error on play
+
+func _draw()->void:
+	if !trajectory.empty():
+		for i in trajectory.size() - 1:
+			draw_line(trajectory[i], trajectory[i+1], Color.gainsboro, 20)
