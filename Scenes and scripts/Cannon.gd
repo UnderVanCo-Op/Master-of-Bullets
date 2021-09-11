@@ -19,7 +19,8 @@ func _physics_process(delta):
 	$Dulo.look_at(get_global_mouse_position())
 
 func _process(delta):
-	calc_traj()
+	#calc_traj()
+	pass
 
 func traj_to_relative():		# перевод всех коорд, кроме 0-ой в относительные
 	for i in trajectory.size():
@@ -42,6 +43,7 @@ func calc_traj():	# работаем с абс-ми коорд-ами, в кон
 	var spacestate = get_world_2d().direct_space_state
 	var data : Dictionary
 	data = spacestate.intersect_ray(start, end)
+	#data = spacestate.intersect_shape()
 	
 	if data:
 		#circle = data.position - global_position	# смещаем circle
