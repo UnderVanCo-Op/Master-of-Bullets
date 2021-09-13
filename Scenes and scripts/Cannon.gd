@@ -19,7 +19,7 @@ func _physics_process(delta):
 	$Dulo.look_at(get_global_mouse_position())
 
 func _process(delta):
-	#calc_traj()
+	calc_traj()
 	pass
 
 func traj_to_relative():		# перевод всех коорд, кроме 0-ой в относительные
@@ -28,9 +28,9 @@ func traj_to_relative():		# перевод всех коорд, кроме 0-о�
 
 func calc_traj():	# работаем с абс-ми коорд-ами, в конце с помощью ф переводим в отн-ые для ф _draw
 	#print("\n\n\niteration\n")
-	trajectory.resize(0)
+	trajectory.resize(0)	# очищение предыдущей траектории
 	
-	var lineLen = 1500 # px or unit of measurment 
+	var lineLen = 1500			# px or unit of measurment 
 	var start = $Dulo/SpawnLoc.get_global_position()	# позиция дула абс-ая
 	var end : Vector2			# вычислим точку до которой будет лететь луч (абс)
 	var dir : Vector2			# это вектор направления (должен быть нормализированным) 
@@ -42,13 +42,15 @@ func calc_traj():	# работаем с абс-ми коорд-ами, в кон
 	
 	var spacestate = get_world_2d().direct_space_state
 	var data : Dictionary
-	data = spacestate.intersect_ray(start, end)
+	data = spacestate.intersect_ray(start, end, [self])
 	#data = spacestate.intersect_shape()
 	
 	if data:
 		#circle = data.position - global_position	# смещаем circle
-		end = data.position - (data.position - start).normalized() * 0.01
-		dir = dir.bounce(data.normal.normalized()).normalized()	# нормалайзд для избавления от ошибки
+		end = data.position - (data.position - start).normalized() * 0.01	# фикс для выхода из коллизии
+		dir = dir.bounce(data.normal).normalized()	# нормалайзд на всякий, ошибка когда прицел в платформе начала
+		var angle1 = dir.dot(data.normal)		# 1 - 0 градусов, -1 - 180 градусов
+		print(rad2deg(acos(-angle1)))	# работает корректно, берет меньший из смежных углов
 		
 	else:
 		lineLen -= (end - start).length()
@@ -66,7 +68,7 @@ func calc_traj():	# работаем с абс-ми коорд-ами, в кон
 		#
 		data = spacestate.intersect_ray(start, end)
 		if data:
-			end = data.position - (data.position - start).normalized() * 0.01
+			end = data.position - (data.position - start).normalized() * 0.01	# фикс для выхода из коллизии
 			dir = dir.bounce(data.normal).normalized()	# нормалайзд на всякий, вектор правильный
 			
 		else:
