@@ -1,15 +1,21 @@
 extends RigidBody2D
 
-export var bounces = 1
+#export var bounces = 1
+#
+#var pos : Vector2
+#var dir : Vector2
+#
+#var trace : Array
+#var color1 := Color.white
+var Radius : float
 
-var pos : Vector2
-var dir : Vector2
 
-var trace : Array
-var color1 := Color.white
-
-
-
+func _ready():
+	#print($CollisionShape2D.get_global_scale())
+	Radius = $CollisionShape2D.get_shape().radius
+	#print(Radius)
+	#print(transform.basis_xform())
+	#print(transform.ba)
 
 #var dragging
 #var drag_start = Vector2()
