@@ -65,29 +65,44 @@ func calc_traj():	# работаем с абс-ми коорд-ами, в кон
 	#circle = end - global_position
 	#
 	var spacestate = get_world_2d().direct_space_state
-	var dataL : Dictionary
-	var dataR : Dictionary
-	var data : Dictionary
+	var dataL : Dictionary		# left
+	var dataC : Dictionary		# center
+	var dataR : Dictionary		# right
+	var data : Dictionary		# final
 	dataL = spacestate.intersect_ray(Lstart, Lend, [self])
+	dataC = spacestate.intersect_ray(start, end, [self])
 	dataR = spacestate.intersect_ray(Rstart, Rend, [self])
 	#data = spacestate.intersect_shape()
+	var isPerpen = false
+	var isCenterOnly = false
 	
-	if (dataL && dataR):
-		if(dataL.position.length() > dataR.position.length()):
+	if (dataL && dataR && dataC):
+		if (dataL.position.length() > dataR.position.length()):		# берем кратчайший луч
 			data = dataR
+		elif (dataL.position.length() == dataR.position.length()):
+			isPerpen = true
+			data = dataC
+			print("Perpendilukar!")
 		else:
 			data = dataL
 	elif (dataL):
 		data = dataL
 	elif (dataR):
 		data = dataR
-	else:
-		#print("no data on both!")
+	elif (dataC):
+		data = dataC
+		isCenterOnly = true
+	else:		# ни один из 3-х лучей никуда не попал
+		#print("no data on all!")
 		#lineLenL -= (end - start).length()
 		trajectory.append(end)
 		traj_to_relative()			# переход в относительные коорд-ы
 		update()					# обновление функции draw
 		return
+	
+	if (isPerpen):
+		pass
+	
 	
 	circle = data.position - global_position	# смещаем circle на нашу точку коллизии
 	end = data.position - (data.position - start).normalized() * 0.01	# фикс для выхода из коллизии
