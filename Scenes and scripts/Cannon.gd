@@ -110,7 +110,7 @@ func calc_traj():	# работаем с абс-ми коорд-ами, в кон
 	var angle1 = rad2deg(acos(dir.dot(data.normal)))	# 1 - 0 градусов, -1 - 180 градусов; работает корректно, берет меньший из смежных углов
 	var angle2 = 90 - angle1	# работаем в градусах
 	if(angle1 != 0):
-		var MP = abs((RRadius * sin(angle1)) / sin(angle2))		# МБ ОШИБКА из-за непроверки на 0 angle2
+		var MP = abs((RRadius * sin(angle1)) / sin(angle2))		# ОШИБКА из-за непроверки на 0 angle2
 		var PC = abs(MP / sin(angle1))# PC - b = CM - искомый отрезок
 		var CM = abs((RRadius / sin(angle2)) - ((RRadius * sin(angle1)) / sin(angle2)))	# th sin
 #			print("\npart2")
