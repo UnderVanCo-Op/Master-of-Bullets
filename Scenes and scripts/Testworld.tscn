@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Scenes and scripts/Cannon.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Scenes and scripts/Reflective Platrofm.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes and scripts/Static Platrofm.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes and scripts/Testworld.gd" type="Script" id=4]
 
 [node name="Testworld" type="Node2D"]

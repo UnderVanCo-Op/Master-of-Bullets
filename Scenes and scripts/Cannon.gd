@@ -130,7 +130,6 @@ func calc_traj():	# работаем с абс-ми коорд-ами, в кон
 	
 	lineLenL -= (end - start).length()
 	trajectory.append(end)
-
 #	while lineLen > 0.1:
 #		start = end
 #		end = lineLen * dir + start
